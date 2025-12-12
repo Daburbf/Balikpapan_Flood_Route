@@ -1,0 +1,49 @@
+{
+  "flood_points": [
+    {
+      "id": 1,
+      "latitude": -1.268,
+      "longitude": 116.830,
+      "street": "Jalan Sudirman",
+      "level": "Tinggi",
+      "depth": "70cm",
+      "radius": 40
+    },
+    {
+      "id": 2,
+      "latitude": -1.272,
+      "longitude": 116.835,
+      "street": "Jalan MT Haryono",
+      "level": "Sedang",
+      "depth": "40cm",
+      "radius": 35
+    },
+    {
+      "id": 3,
+      "latitude": -1.265,
+      "longitude": 116.828,
+      "street": "Jalan Yos Sudarso",
+      "level": "Rendah",
+      "depth": "20cm",
+      "radius": 30
+    },
+    {
+      "id": 4,
+      "latitude": -1.275,
+      "longitude": 116.838,
+      "street": "Jalan A Yani",
+      "level": "Tinggi",
+      "depth": "60cm",
+      "radius": 40
+    },
+    {
+      "id": 5,
+      "latitude": -1.270,
+      "longitude": 116.840,
+      "street": "Jalan S Parman",
+      "level": "Sedang",
+      "depth": "35cm",
+      "radius": 35
+    }
+  ]
+}

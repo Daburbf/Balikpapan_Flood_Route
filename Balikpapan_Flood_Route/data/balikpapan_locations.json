@@ -1,0 +1,214 @@
+{
+  "locations": [
+    {
+      "id": "loc_001",
+      "name": "Bandara Sultan Aji Muhammad Sulaiman",
+      "address": "Jl. Marsma Iswahyudi, Balikpapan",
+      "latitude": -1.268,
+      "longitude": 116.894
+    },
+    {
+      "id": "loc_002",
+      "name": "Mall Balikpapan Plaza",
+      "address": "Jl. Jenderal Sudirman, Balikpapan",
+      "latitude": -1.262,
+      "longitude": 116.831
+    },
+    {
+      "id": "loc_003",
+      "name": "Pelabuhan Semayang",
+      "address": "Jl. Yos Sudarso, Balikpapan",
+      "latitude": -1.258,
+      "longitude": 116.812
+    },
+    {
+      "id": "loc_004",
+      "name": "RSUD Dr. Kanujoso Djatiwibowo",
+      "address": "Jl. MT. Haryono, Balikpapan",
+      "latitude": -1.272,
+      "longitude": 116.843
+    },
+    {
+      "id": "loc_005",
+      "name": "Universitas Balikpapan",
+      "address": "Jl. Pupuk Raya, Balikpapan",
+      "latitude": -1.255,
+      "longitude": 116.867
+    },
+    {
+      "id": "loc_006",
+      "name": "Pantai Manggar Segara Sari",
+      "address": "Balikpapan Timur",
+      "latitude": -1.235,
+      "longitude": 116.912
+    },
+    {
+      "id": "loc_007",
+      "name": "Kawasan Industri Kariangau",
+      "address": "Balikpapan Barat",
+      "latitude": -1.205,
+      "longitude": 116.745
+    },
+    {
+      "id": "loc_008",
+      "name": "Terminal Batu Ampar",
+      "address": "Jl. Ahmad Yani, Balikpapan",
+      "latitude": -1.263,
+      "longitude": 116.838
+    },
+    {
+      "id": "loc_009",
+      "name": "Pasar Kebun Sayur",
+      "address": "Balikpapan Tengah",
+      "latitude": -1.258,
+      "longitude": 116.852
+    },
+    {
+      "id": "loc_010",
+      "name": "Kantor Walikota Balikpapan",
+      "address": "Jl. Jenderal Sudirman, Balikpapan",
+      "latitude": -1.265,
+      "longitude": 116.827
+    },
+    {
+      "id": "loc_011",
+      "name": "Lapangan Merdeka Balikpapan",
+      "address": "Jl. Jenderal Sudirman, Balikpapan",
+      "latitude": -1.267,
+      "longitude": 116.827
+    },
+    {
+      "id": "loc_012",
+      "name": "Balaikota Balikpapan",
+      "address": "Jl. Jenderal Sudirman, Balikpapan",
+      "latitude": -1.266,
+      "longitude": 116.828
+    },
+    {
+      "id": "loc_013",
+      "name": "Masjid Agung At-Taqwa",
+      "address": "Jl. Jenderal Sudirman, Balikpapan",
+      "latitude": -1.264,
+      "longitude": 116.832
+    },
+    {
+      "id": "loc_014",
+      "name": "Klandasan Ulu",
+      "address": "Balikpapan Kota",
+      "latitude": -1.260,
+      "longitude": 116.835
+    },
+    {
+      "id": "loc_015",
+      "name": "Damai",
+      "address": "Balikpapan Kota",
+      "latitude": -1.259,
+      "longitude": 116.840
+    },
+    {
+      "id": "loc_016",
+      "name": "Gunung Sari Ilir",
+      "address": "Balikpapan Kota",
+      "latitude": -1.257,
+      "longitude": 116.845
+    },
+    {
+      "id": "loc_017",
+      "name": "Mentawir",
+      "address": "Balikpapan Utara",
+      "latitude": -1.250,
+      "longitude": 116.850
+    },
+    {
+      "id": "loc_018",
+      "name": "Karang Rejo",
+      "address": "Balikpapan Utara",
+      "latitude": -1.245,
+      "longitude": 116.855
+    },
+    {
+      "id": "loc_019",
+      "name": "Karang Jati",
+      "address": "Balikpapan Utara",
+      "latitude": -1.240,
+      "longitude": 116.860
+    },
+    {
+      "id": "loc_020",
+      "name": "Muar Rapak",
+      "address": "Balikpapan Utara",
+      "latitude": -1.235,
+      "longitude": 116.865
+    },
+    {
+      "id": "loc_021",
+      "name": "Graha Indah",
+      "address": "Balikpapan Utara",
+      "latitude": -1.230,
+      "longitude": 116.870
+    },
+    {
+      "id": "loc_022",
+      "name": "Batu Ampar",
+      "address": "Balikpapan Timur",
+      "latitude": -1.275,
+      "longitude": 116.895
+    },
+    {
+      "id": "loc_023",
+      "name": "Manggar",
+      "address": "Balikpapan Timur",
+      "latitude": -1.230,
+      "longitude": 116.905
+    },
+    {
+      "id": "loc_024",
+      "name": "Lamaru",
+      "address": "Balikpapan Timur",
+      "latitude": -1.220,
+      "longitude": 116.915
+    },
+    {
+      "id": "loc_025",
+      "name": "Teritip",
+      "address": "Balikpapan Timur",
+      "latitude": -1.210,
+      "longitude": 116.925
+    },
+    {
+      "id": "loc_026",
+      "name": "Kariangau",
+      "address": "Balikpapan Barat",
+      "latitude": -1.200,
+      "longitude": 116.750
+    },
+    {
+      "id": "loc_027",
+      "name": "Baru Ilir",
+      "address": "Balikpapan Selatan",
+      "latitude": -1.280,
+      "longitude": 116.820
+    },
+    {
+      "id": "loc_028",
+      "name": "Baru Ulu",
+      "address": "Balikpapan Selatan",
+      "latitude": -1.285,
+      "longitude": 116.815
+    },
+    {
+      "id": "loc_029",
+      "name": "Prapatan",
+      "address": "Balikpapan Tengah",
+      "latitude": -1.270,
+      "longitude": 116.850
+    },
+    {
+      "id": "loc_030",
+      "name": "Gunung Bahagia",
+      "address": "Balikpapan Selatan",
+      "latitude": -1.290,
+      "longitude": 116.810
+    }
+  ]
+}
