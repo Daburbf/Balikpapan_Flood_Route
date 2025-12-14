@@ -40,7 +40,6 @@ class MapWidget(QWidget):
     def load_map(self, center=[-1.265, 116.831], zoom=13):
         self.map_obj = folium.Map(location=center, zoom_start=zoom, tiles="CartoDB dark_matter")
         
-        # Script untu menangkap klik
         self.map_obj.get_root().html.add_child(folium.Element("""
             <script>
                 window.onload = function() {
@@ -109,7 +108,6 @@ class MapWidget(QWidget):
         self.refresh_view()
 
     def add_flood_areas(self, flood_data):
-        # Untuk data lama (lingkaran)
         for point in flood_data:
             if 'radius' in point:
                 lat, lon = point['latitude'], point['longitude']
@@ -118,7 +116,6 @@ class MapWidget(QWidget):
         self.refresh_view()
         
     def clear_routes(self):
-        # Logic reset ada di main window (reload map)
         pass 
 
     def set_status(self, text):
