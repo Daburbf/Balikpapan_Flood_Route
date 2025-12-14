@@ -7,7 +7,6 @@ import os
 import json
 from math import radians, cos, sin, asin, sqrt
 
-# Import Core System
 from core.place_loader import load_places_from_csv
 from ui.map_widget import MapWidget
 from core.graph import Graph
@@ -16,22 +15,18 @@ from core.dijkstra import Dijkstra
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        
-        # 1. INISIALISASI PETA (Hanya sekali di awal)
-        print("⏳ Sedang memuat data peta...")
+
+        print("Sedang memuat data peta...")
         self.graph = Graph() 
-        
-        # --- PERBAIKAN FREEZE ---
-        # Kita simpan cadangan graph yang masih bersih di RAM
-        # Agar saat reset tidak perlu baca file lagi dari awal.
+
         self.graph_backup = self.graph.G.copy() 
-        print("✅ Backup peta disimpan di memori.")
+        print("Backup peta disimpan di memori.")
         
         self.dijkstra = Dijkstra(self.graph)
         
-        self.flood_data = []      # Data banjir JSON (Lingkaran)
-        self.flood_polygons = []  # Data banjir User (Bentuk Bebas)
-        self.temp_flood_points = [] # Titik sementara saat menggambar
+        self.flood_data = []   
+        self.flood_polygons = [] 
+        self.temp_flood_points = [] 
         
         self.search_data = [] 
         self.start_location = None
@@ -39,28 +34,22 @@ class MainWindow(QMainWindow):
         
         self.click_mode = "start" 
 
-        # 2. Load Data Tambahan
         self.init_data()
         self.extract_streets_from_osm() 
         
-        # 3. Setup Tampilan
         self.init_ui()
-        
-        # 4. Hubungkan Signal Klik Peta
+
         try:
             self.map_widget.map_clicked_signal.connect(self.handle_map_click)
         except AttributeError:
             print("Warning: MapWidget belum support klik.")
 
     def init_data(self):
-        # Reset data banjir
+
         self.flood_data = []
 
-        # --- 1. LOAD DATA BANJIR (DARI FOLDER DATA) ---
-        # Kita gunakan os.path.join agar aman di Windows/Mac
         target_file = os.path.join('data', 'locations_balikpapan.json')
-        
-        # Cek apakah file ada
+
         if os.path.exists(target_file):
             try:
                 with open(target_file, 'r') as f:
@@ -69,7 +58,7 @@ class MainWindow(QMainWindow):
                     
                     valid_count = 0
                     for p in raw_points:
-                        # Filter Null
+
                         if p.get('latitude') is not None and p.get('longitude') is not None:
                             clean_point = {
                                 'latitude': float(p['latitude']),
@@ -80,22 +69,20 @@ class MainWindow(QMainWindow):
                             self.flood_data.append(clean_point)
                             valid_count += 1
                             
-                    print(f"✅ Data Banjir: {valid_count} titik dimuat dari 'data/locations_balikpapan.json'.")
+                    print(f"Data Banjir: {valid_count} titik dimuat dari 'data/locations_balikpapan.json'.")
                     
             except Exception as e:
-                print(f"❌ Gagal membaca JSON: {e}")
+                print(f"Gagal membaca JSON: {e}")
         else:
-            print(f"⚠️ File tidak ditemukan: {target_file}")
+            print(f"File tidak ditemukan: {target_file}")
 
-        # --- TERAPKAN KE GRAPH ---
         if self.flood_data:
             self.graph.apply_flood_data(self.flood_data)
             if hasattr(self, 'graph_backup'):
                 self.apply_flood_to_graph_obj(self.graph_backup, self.flood_data)
         else:
-            print("ℹ️ Tidak ada data banjir aktif.")
+            print("Tidak ada data banjir aktif.")
 
-        # --- 2. LOAD DATA LOKASI UMUM (HARDCODED) ---
         self.search_data = [
             {'name': 'Bandara SAMS Sepinggan', 'lat': -1.268, 'lon': 116.894},
             {'name': 'Plaza Balikpapan', 'lat': -1.262, 'lon': 116.832},
@@ -103,12 +90,11 @@ class MainWindow(QMainWindow):
             {'name': 'Lapangan Merdeka', 'lat': -1.275, 'lon': 116.820},
         ]
 
-        # --- 3. LOAD DATA TEMPAT (DARI FOLDER DATA) ---
-        print("📂 Membaca CSV dari folder data...")
+        print("Membaca CSV dari folder data...")
         csv_path = os.path.join('data', 'tempat_balikpapan.csv')
         
         try:
-            # Kita panggil loader dengan path lengkap 'data/tempat_balikpapan.csv'
+
             csv_places = load_places_from_csv(csv_path)
             
             count_csv = 0
@@ -117,21 +103,20 @@ class MainWindow(QMainWindow):
                     'name': name, 'lat': coords[0], 'lon': coords[1]    
                 })
                 count_csv += 1
-            print(f"✅ CSV Loaded: {count_csv} tempat berhasil ditambahkan.")
+            print(f"CSV Loaded: {count_csv} tempat berhasil ditambahkan.")
             
         except Exception as e:
-            print(f"❌ Gagal memuat CSV: {e}")
+            print(f"Gagal memuat CSV: {e}")
         
     def apply_flood_to_graph_obj(self, G_obj, flood_points):
         """Helper function untuk menerapkan flood ke object graph tertentu (bukan self.graph)"""
-        # Kita duplikasi logika apply_flood_data di sini untuk objek backup
-        # Asumsi: radius banjir sederhana
+ 
         nodes_to_remove = []
         for node, data in G_obj.nodes(data=True):
             n_lat, n_lon = data['y'], data['x']
             for flood in flood_points:
                 dist = sqrt((n_lat - flood['latitude'])**2 + (n_lon - flood['longitude'])**2)
-                # Konversi kasar derajat ke meter (di ekuator 1 derajat ~ 111km)
+
                 dist_meter = dist * 111000
                 if dist_meter <= flood.get('radius', 100):
                     nodes_to_remove.append(node)
@@ -182,7 +167,7 @@ class MainWindow(QMainWindow):
         
     def initialize_map(self):
         self.map_widget.load_map()
-        # Gambar ulang semua banjir (Json + User Polygon)
+
         if self.flood_data:
             self.map_widget.add_flood_areas(self.flood_data)
         
@@ -191,10 +176,9 @@ class MainWindow(QMainWindow):
              
         self.map_widget.set_status(f"Siap.")
 
-    # --- LOGIKA KLIK PETA ---
     def set_mode(self, mode):
         self.click_mode = mode
-        # Reset temp points jika ganti mode
+
         self.temp_flood_points = []
         
         if mode == "flood":
@@ -228,12 +212,9 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Kurang Titik", "Minimal butuh 3 titik untuk membuat area.")
             return
 
-        # 1. Simpan Polygon
-        poly_points = list(self.temp_flood_points) # Copy
+        poly_points = list(self.temp_flood_points) 
         self.flood_polygons.append(poly_points)
-        
-        # 2. Update Graph (Blokir node di dalam polygon)
-        # Gunakan QApplication.processEvents() agar UI tidak macet saat menghitung
+    
         QApplication.setOverrideCursor(Qt.WaitCursor)
         self.map_widget.set_status("Sedang memproses area banjir...")
         QApplication.processEvents()
@@ -241,11 +222,9 @@ class MainWindow(QMainWindow):
         blocked_count = self.apply_polygon_flood_to_graph(poly_points)
         
         QApplication.restoreOverrideCursor()
-        
-        # 3. Gambar Polygon Merah di Peta
+    
         self.map_widget.add_flood_polygon(poly_points)
-        
-        # 4. Reset
+
         self.temp_flood_points = []
         self.flood_warning.setText(f"Area Banjir dibuat! {blocked_count} titik jalan diblokir.")
         QMessageBox.information(self, "Banjir Terbentuk", f"Area banjir berhasil dibuat.\n{blocked_count} titik jalan telah ditutup.")
@@ -259,7 +238,7 @@ class MainWindow(QMainWindow):
             inside = False
             j = len(poly) - 1
             for i in range(len(poly)):
-                xi, yi = poly[i] # lat, lon
+                xi, yi = poly[i]
                 xj, yj = poly[j]
                 intersect = ((yi > lon) != (yj > lon)) and \
                     (lat < (xj - xi) * (lon - yi) / (yj - yi) + xi)
@@ -287,8 +266,8 @@ class MainWindow(QMainWindow):
             return
 
         self.map_widget.set_status("Menghitung rute...")
-        QApplication.setOverrideCursor(Qt.WaitCursor) # Ubah kursor jadi loading
-        QApplication.processEvents() # Refresh UI
+        QApplication.setOverrideCursor(Qt.WaitCursor) 
+        QApplication.processEvents()
         
         try:
             route_coords = self.dijkstra.find_route(
@@ -320,7 +299,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(f"Error Routing: {e}")
         finally:
-            QApplication.restoreOverrideCursor() # Kembalikan kursor
+            QApplication.restoreOverrideCursor()
 
     def calculate_distance(self, coords):
         total_dist = 0
@@ -341,7 +320,6 @@ class MainWindow(QMainWindow):
         self.map_widget.set_status("Mereset sistem...")
         QApplication.processEvents()
 
-        # 1. Reset UI
         self.start_input.clear()
         self.dest_input.clear()
         self.start_location = None
@@ -354,18 +332,13 @@ class MainWindow(QMainWindow):
         
         self.flood_warning.setText("Status: Menunggu")
         self.flood_warning.setStyleSheet("color: white;")
-        
-        # 2. Reset Data User
+   
         self.flood_polygons = []
         self.temp_flood_points = []
-        
-        # 3. RESET GRAPH (Penyebab Freeze sebelumnya)
-        # JANGAN lakukan: self.graph = Graph()
-        # LAKUKAN ini: Restore dari backup memori
+
         print("Mereset graph dari backup memori...")
         self.graph.G = self.graph_backup.copy() 
-        
-        # Re-initialize Dijkstra dengan graph yang baru di-restore
+
         self.dijkstra = Dijkstra(self.graph)
         
         print("Graph berhasil direset.")
@@ -377,15 +350,13 @@ class MainWindow(QMainWindow):
         self.map_widget.set_status("Peta berhasil direset.")
         QApplication.restoreOverrideCursor()
 
-    # --- UI COMPONENTS ---
     def create_left_panel(self):
         panel = QWidget()
         panel.setStyleSheet("background-color: #1e293b; color: white;")
         layout = QVBoxLayout(panel)
         
         layout.addWidget(QLabel("<h2>BALIKPAPAN NAV</h2>"))
-        
-        # --- PANEL KONTROL KLIK ---
+
         mode_group = QGroupBox("Mode Klik Peta")
         mode_group.setStyleSheet("QGroupBox { border: 1px solid #94a3b8; margin-top: 5px; padding: 10px; border-radius: 5px; }")
         mode_layout = QVBoxLayout()
@@ -420,7 +391,6 @@ class MainWindow(QMainWindow):
         
         layout.addSpacing(10)
 
-        # INPUT TEXT
         layout.addWidget(QLabel("Lokasi Awal:"))
         self.start_input = QLineEdit()
         self.start_input.setStyleSheet("padding: 8px; color: black; border-radius: 4px; background: #f1f5f9;")
@@ -445,7 +415,6 @@ class MainWindow(QMainWindow):
 
         layout.addSpacing(15)
 
-        # TOMBOL ACTION
         self.btn_route = QPushButton("CARI RUTE AMAN")
         self.btn_route.setStyleSheet("""
             QPushButton {
@@ -467,8 +436,7 @@ class MainWindow(QMainWindow):
         """)
         self.btn_reset.clicked.connect(self.reset_app)
         layout.addWidget(self.btn_reset)
-        
-        # --- INFO ---
+ 
         info_group = QGroupBox("Estimasi Perjalanan")
         info_group.setStyleSheet("QGroupBox { border: 1px solid #3b82f6; margin-top: 15px; padding: 10px; border-radius: 5px; color: white; }")
         info_layout = QFormLayout()
