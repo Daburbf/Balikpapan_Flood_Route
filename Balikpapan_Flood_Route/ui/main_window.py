@@ -17,13 +17,13 @@ class MainWindow(QMainWindow):
         self.dijkstra = Dijkstra(self.graph)
         
         self.flood_data = []
-        self.search_data = [] # Gabungan Lokasi Umum + Nama Jalan OSM
+        self.search_data = [] 
         self.start_location = None
         self.end_location = None
 
         # 2. Load Data Tambahan
         self.init_data()
-        self.extract_streets_from_osm() # <--- FITUR BARU: Ambil nama jalan dari Peta
+        self.extract_streets_from_osm() 
         
         # 3. Setup Tampilan
         self.init_ui()
@@ -31,9 +31,7 @@ class MainWindow(QMainWindow):
     def init_data(self):
         # --- LOAD DATA BANJIR ---
         flood_file = 'flood_data.json'
-        # Coba cari di folder saat ini
         if not os.path.exists(flood_file):
-            # Coba cari di folder data jika ada
             flood_file = os.path.join('data', 'flood_data.json')
 
         if os.path.exists(flood_file):
@@ -47,9 +45,9 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 print(f"❌ Error JSON: {e}")
         else:
-            print(f"⚠️ Warning: File '{flood_file}' tidak ditemukan di folder proyek.")
+            print(f"⚠️ Warning: File '{flood_file}' tidak ditemukan.")
 
-        # --- DATA LOKASI UMUM (Default) ---
+        # --- DATA LOKASI UMUM ---
         self.search_data = [
             {'name': 'Bandara SAMS Sepinggan', 'lat': -1.268, 'lon': 116.894},
             {'name': 'Plaza Balikpapan', 'lat': -1.262, 'lon': 116.832},
@@ -62,32 +60,24 @@ class MainWindow(QMainWindow):
         ]
         
     def extract_streets_from_osm(self):
-        """FITUR BARU: Mengambil nama jalan dari data OSMnx yang sudah didownload"""
         print("🔍 Mengindeks nama jalan dari peta... (Agar bisa dicari)")
         try:
             G = self.graph.G
             seen_names = set()
-            
-            # Loop semua jalan di peta
             for u, v, data in G.edges(data=True):
                 if 'name' in data:
                     name = data['name']
-                    # Kadang nama jalan itu list ['Jl A', 'Jl B'], kita ambil yang pertama
                     if isinstance(name, list):
                         name = name[0]
-                    
                     if name and name not in seen_names:
                         seen_names.add(name)
-                        # Ambil koordinat tengah jalan tsb untuk marker
                         node_data = G.nodes[u]
                         self.search_data.append({
                             'name': str(name),
                             'lat': node_data['y'],
                             'lon': node_data['x']
                         })
-            
-            print(f"✅ Berhasil mengindeks {len(seen_names)} nama jalan unik untuk pencarian.")
-            
+            print(f"✅ Berhasil mengindeks {len(seen_names)} nama jalan unik.")
         except Exception as e:
             print(f"⚠️ Gagal mengindeks nama jalan: {e}")
 
@@ -125,7 +115,6 @@ class MainWindow(QMainWindow):
 
         self.map_widget.set_status("Menghitung rute...")
         
-        # Panggil Dijkstra
         try:
             route_coords = self.dijkstra.find_route(
                 self.start_location['lat'], self.start_location['lon'],
@@ -133,8 +122,9 @@ class MainWindow(QMainWindow):
             )
             
             if route_coords:
-                self.map_widget.clear_routes()
-                self.update_map_markers() # Gambar ulang marker biar ga ilang
+                # Jangan clear routes sembarangan, cukup timpa
+                self.map_widget.clear_routes() 
+                self.update_map_markers() 
                 self.map_widget.draw_route(route_coords, color='#3b82f6')
                 self.map_widget.set_status("Rute Aman Ditemukan!")
                 self.flood_warning.setText("✅ Rute Aman Tersedia")
@@ -143,6 +133,24 @@ class MainWindow(QMainWindow):
                 QMessageBox.information(self, "Gagal", "Tidak ada jalur aman. Lokasi mungkin terkepung banjir.")
         except Exception as e:
             print(f"Error Routing: {e}")
+
+    def reset_app(self):
+        """Fungsi untuk mereset aplikasi ke kondisi awal"""
+        # 1. Bersihkan Input Text
+        self.start_input.clear()
+        self.dest_input.clear()
+        
+        # 2. Reset Variabel Lokasi
+        self.start_location = None
+        self.end_location = None
+        
+        # 3. Reset Status Label
+        self.flood_warning.setText("Status: Menunggu")
+        self.flood_warning.setStyleSheet("color: white;")
+        
+        # 4. Bersihkan Peta (Hapus rute & marker, tapi banjhir tetap ada karena map_widget sudah pintar)
+        self.map_widget.clear_routes()
+        self.map_widget.set_status("Peta direset.")
 
     # --- UI COMPONENTS ---
     def create_left_panel(self):
@@ -156,7 +164,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(QLabel("Lokasi Awal:"))
         self.start_input = QLineEdit()
         self.start_input.setPlaceholderText("Ketik nama jalan...")
-        self.start_input.setStyleSheet("padding: 8px; color: black;")
+        self.start_input.setStyleSheet("padding: 8px; color: black; border-radius: 4px;")
         layout.addWidget(self.start_input)
         
         self.start_suggestions = QListWidget()
@@ -169,7 +177,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(QLabel("Tujuan:"))
         self.dest_input = QLineEdit()
         self.dest_input.setPlaceholderText("Ketik nama jalan...")
-        self.dest_input.setStyleSheet("padding: 8px; color: black;")
+        self.dest_input.setStyleSheet("padding: 8px; color: black; border-radius: 4px;")
         layout.addWidget(self.dest_input)
         
         self.dest_suggestions = QListWidget()
@@ -178,12 +186,41 @@ class MainWindow(QMainWindow):
         self.dest_suggestions.itemClicked.connect(self.on_dest_selected)
         layout.addWidget(self.dest_suggestions)
 
-        # TOMBOL
-        self.btn_route = QPushButton("CARI RUTE")
-        self.btn_route.setStyleSheet("background-color: #2563eb; padding: 10px; font-weight: bold;")
+        # JARAK TOMBOL
+        layout.addSpacing(20)
+
+        # TOMBOL CARI RUTE
+        self.btn_route = QPushButton("🔍 CARI RUTE AMAN")
+        self.btn_route.setStyleSheet("""
+            QPushButton {
+                background-color: #2563eb; 
+                padding: 12px; 
+                font-weight: bold;
+                border-radius: 6px;
+                color: white;
+            }
+            QPushButton:hover { background-color: #1d4ed8; }
+        """)
         self.btn_route.clicked.connect(self.find_route)
         layout.addWidget(self.btn_route)
         
+        # TOMBOL RESET (BARU)
+        self.btn_reset = QPushButton("🔄 RESET")
+        self.btn_reset.setStyleSheet("""
+            QPushButton {
+                background-color: #dc2626; 
+                padding: 10px; 
+                font-weight: bold;
+                border-radius: 6px;
+                color: white;
+                margin-top: 5px;
+            }
+            QPushButton:hover { background-color: #b91c1c; }
+        """)
+        self.btn_reset.clicked.connect(self.reset_app)
+        layout.addWidget(self.btn_reset)
+        
+        layout.addSpacing(20)
         self.flood_warning = QLabel("Status: Menunggu")
         layout.addWidget(self.flood_warning)
         layout.addStretch()
@@ -202,20 +239,19 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.map_widget)
         return panel
 
-    # --- LOGIKA SEARCH (FIXED) ---
+    # --- LOGIKA SEARCH ---
     def filter_suggestions(self, text, list_widget):
-        if len(text) < 3: # Tunggu ketik 3 huruf baru cari
+        if len(text) < 3: 
             list_widget.hide()
             return
             
         text = text.lower()
         matches = []
         
-        # Cari di data gabungan (Lokasi Umum + Jalan OSM)
         for item in self.search_data:
             if text in item['name'].lower():
                 matches.append(item)
-                if len(matches) > 20: break # Batasi max 20 hasil biar ga lemot
+                if len(matches) > 20: break 
         
         list_widget.clear()
         if matches:
@@ -243,7 +279,6 @@ class MainWindow(QMainWindow):
         self.update_map_markers()
 
     def update_map_markers(self):
-        # Reset marker di peta jika perlu (opsional)
         if self.start_location:
             self.map_widget.add_start_marker(
                 [self.start_location['lat'], self.start_location['lon']], 
@@ -256,5 +291,4 @@ class MainWindow(QMainWindow):
             )
             
     def closeEvent(self, event):
-        # Bersihkan resource saat tutup
         event.accept()

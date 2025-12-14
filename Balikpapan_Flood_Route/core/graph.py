@@ -3,51 +3,52 @@ import networkx as nx
 
 class Graph:
     def __init__(self):
+        # Download peta area Balikpapan
+        # Menggunakan network_type='drive' agar fokus ke jalan raya mobil/motor
         print("Memuat Peta Balikpapan... (Harap Tunggu)")
-        # Download jalan raya (drive) untuk area Balikpapan
-        # Ini akan otomatis membuat ribuan nodes sesuai jalan aspal
-        self.G = ox.graph_from_place('Balikpapan, Indonesia', network_type='drive')
+        self.G = ox.graph_from_place("Balikpapan, Indonesia", network_type='drive')
         
-        # Tambahkan estimasi waktu tempuh ke setiap jalan
+        # Tambahkan kecepatan rata-rata & waktu tempuh (weight) ke setiap jalan
         self.G = ox.add_edge_speeds(self.G)
         self.G = ox.add_edge_travel_times(self.G)
         
-        # Simpan versi "Bersih" (Tanpa banjir) untuk reset
-        self.base_G = self.G.copy()
+        # Urutkan index agar pencarian lebih cepat
+        self.G = ox.utils_graph.get_largest_component(self.G, strongly=True)
         print(f"Peta Siap! {len(self.G.nodes)} titik jalan termuat.")
-
-    def get_nearest_node(self, lat, lon):
-        """Mencari titik jalan terdekat dari koordinat klik user"""
-        return ox.distance.nearest_nodes(self.G, X=lon, Y=lat)
 
     def apply_flood_data(self, flood_data):
         """
-        INTI AI: Memanipulasi bobot graph berdasarkan data banjir.
+        Memblokir jalan yang terkena banjir dengan memberikan bobot (weight)
+        yang sangat besar (Infinity).
         """
-        # Reset graph ke kondisi bersih dulu
-        self.G = self.base_G.copy()
-        
-        count = 0
-        for flood in flood_data:
-            lat = flood['latitude']
-            lon = flood['longitude']
-            radius = flood['radius']
-            
-            # Cari titik pusat banjir di jalan
+        count_blocked = 0
+        for point in flood_data:
+            lat = point['latitude']
+            lon = point['longitude']
+            # Default radius dibesarkan sedikit jika di JSON tidak ada
+            radius = point.get('radius', 100) 
+
+            # CARA BARU: Cari Node (Titik Simpang) yang masuk dalam radius banjir
+            # Kita cari titik terdekat, lalu cek tetangganya juga
             center_node = ox.distance.nearest_nodes(self.G, X=lon, Y=lat)
             
-            # Cari semua node jalan dalam radius banjir
-            affected_nodes = nx.single_source_dijkstra_path_length(
-                self.G, center_node, cutoff=radius, weight='length'
-            )
+            # Ambil semua jalan yang terhubung ke titik pusat banjir ini
+            # Radius pencarian manual: Kita blokir titik pusat DAN tetangganya
+            nodes_to_block = [center_node]
             
-            # HUKUMAN: Buat jalan yang kena banjir jadi SANGAT LAMBAT
-            for node in affected_nodes:
-                # Ambil semua jalan yang keluar dari node ini
+            # Cek tetangga (agar pemblokiran lebih luas/agresif)
+            neighbors = list(self.G.neighbors(center_node))
+            nodes_to_block.extend(neighbors)
+
+            for node in nodes_to_block:
+                # Blokir jalan KELUAR dari titik ini
                 for u, v, key, data in self.G.edges(node, keys=True, data=True):
-                    # Ubah bobot 'travel_time' jadi Infinity (9999999 detik)
-                    # Sehingga algoritma Dijkstra akan menghindarinya
                     self.G[u][v][key]['travel_time'] = 99999999 
-                    count += 1
-                    
-        print(f"Data banjir diaplikasikan. {count} ruas jalan ditutup.")
+                    count_blocked += 1
+                
+                # Blokir jalan MASUK ke titik ini (PENTING: Biar tidak diterobos dari arah lawan)
+                for u, v, key, data in self.G.in_edges(node, keys=True, data=True):
+                    self.G[u][v][key]['travel_time'] = 99999999
+                    count_blocked += 1
+
+        print(f"⛔ {count_blocked} jalur jalan telah ditutup karena banjir.")

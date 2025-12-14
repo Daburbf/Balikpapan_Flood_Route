@@ -9,57 +9,62 @@ class MapWidget(QWidget):
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
         
-        # WebView untuk menampilkan HTML Peta
         self.webview = QWebEngineView()
         self.layout.addWidget(self.webview)
         
         self.map = None
-        self.start_marker = None
-        self.end_marker = None
-        self.route_line = None
-        self.flood_circles = []
-        
-        # Lokasi Default: Balikpapan
         self.default_location = [-1.265, 116.831] 
+        
+        # --- MEMORY PENYIMPANAN ---
+        # Kita simpan data banjir di sini agar tidak hilang saat refresh
+        self.stored_flood_data = [] 
+        
         self.load_map()
 
     def load_map(self):
-        """Memuat peta dasar"""
+        """Reset peta ke kondisi awal"""
         self.map = folium.Map(
             location=self.default_location, 
             zoom_start=13,
-            tiles='CartoDB dark_matter', # Tampilan Gelap biar keren
+            tiles='CartoDB dark_matter',
             control_scale=True
         )
+        
+        # Setiap kali load map baru, otomatis gambar ulang banjir (jika ada datanya)
+        if self.stored_flood_data:
+            self._draw_flood_layers()
+            
         self.refresh_map()
-
-    def set_status(self, text):
-        # Fungsi dummy biar tidak error saat dipanggil main window
-        print(f"STATUS MAP: {text}")
 
     def add_flood_areas(self, flood_data):
-        """
-        MENGGAMBAR LINGKARAN MERAH (VISUALISASI BANJIR)
-        """
-        for point in flood_data:
-            lat = point.get('latitude')
-            lon = point.get('longitude')
-            radius = point.get('radius', 50)
-            desc = point.get('street', 'Area Banjir')
-            depth = point.get('depth', '? cm')
-
-            # Gambar Lingkaran Merah
-            folium.Circle(
-                location=[lat, lon],
-                radius=radius, # dalam meter
-                color='red',
-                fill=True,
-                fill_color='red',
-                fill_opacity=0.4,
-                popup=f"⛔ BANJIR: {desc}<br>Kedalaman: {depth}"
-            ).add_to(self.map)
-        
+        """Simpan data banjir dan gambar"""
+        self.stored_flood_data = flood_data # Simpan ke memori
+        self._draw_flood_layers()
         self.refresh_map()
+
+    def _draw_flood_layers(self):
+        """Fungsi internal untuk menggambar lingkaran merah"""
+        if not self.stored_flood_data:
+            return
+
+        for point in self.stored_flood_data:
+            try:
+                lat = point.get('latitude')
+                lon = point.get('longitude')
+                radius = point.get('radius', 50)
+                street = point.get('street', 'Area Banjir')
+                
+                folium.Circle(
+                    location=[lat, lon],
+                    radius=radius,
+                    color='#ef4444',      # Merah terang
+                    fill=True,
+                    fill_color='#ef4444',
+                    fill_opacity=0.4,
+                    popup=f"⛔ BANJIR: {street}"
+                ).add_to(self.map)
+            except Exception:
+                pass
 
     def add_start_marker(self, coords, name="Start"):
         folium.Marker(
@@ -78,27 +83,32 @@ class MapWidget(QWidget):
         self.refresh_map()
 
     def draw_route(self, route_coords, color='#3b82f6'):
-        """Menggambar garis rute"""
+        """Menggambar rute tanpa menghapus banjir"""
+        # Jangan panggil load_map() di sini agar marker start/end & banjir tidak hilang
+        
         if route_coords:
             folium.PolyLine(
                 route_coords,
                 color=color,
                 weight=5,
-                opacity=0.8
+                opacity=0.8,
+                tooltip="Rute Aman"
             ).add_to(self.map)
             
-            # Zoom otomatis agar rute terlihat semua
+            # Zoom agar rute terlihat jelas
             self.map.fit_bounds(route_coords)
             self.refresh_map()
 
     def clear_routes(self):
-        # Karena folium susah hapus layer satu per satu secara dinamis di PyQt,
-        # cara termudah adalah reload peta dasar, lalu gambar ulang floodnya nanti.
-        # (Diimplementasikan sederhana dengan reload map)
-        self.load_map()
+        """Hapus rute tapi pertahankan banjir"""
+        # Reload map dasar
+        self.load_map() 
+        # (Fungsi load_map di atas sudah otomatis menggambar ulang banjir)
+
+    def set_status(self, text):
+        print(f"MAP STATUS: {text}")
 
     def refresh_map(self):
-        """Simpan peta ke HTML dan tampilkan di WebView"""
         data = io.BytesIO()
         self.map.save(data, close_file=False)
         self.webview.setHtml(data.getvalue().decode())

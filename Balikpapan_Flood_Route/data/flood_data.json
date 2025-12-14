@@ -1,49 +1,124 @@
 {
   "flood_points": [
     {
-      "id": 1,
-      "latitude": -1.268,
-      "longitude": 116.830,
-      "street": "Jalan Sudirman",
-      "level": "Tinggi",
-      "depth": "70cm",
-      "radius": 40
+      "street": "Jl. MT Haryono (Simpang Beller/DAM)",
+      "latitude": -1.2405, "longitude": 116.8580,
+      "radius": 180, "depth": "100 cm",
+      "description": "Titik lumpuh total utama kota."
     },
     {
-      "id": 2,
-      "latitude": -1.272,
-      "longitude": 116.835,
-      "street": "Jalan MT Haryono",
-      "level": "Sedang",
-      "depth": "40cm",
-      "radius": 35
+      "street": "Jl. MT Haryono (Depan Global Sport/Citra City)",
+      "latitude": -1.2290, "longitude": 116.8655,
+      "radius": 150, "depth": "70 cm",
+      "description": "Banjir dalam memutus akses RS Siloam."
     },
     {
-      "id": 3,
-      "latitude": -1.2645,
-      "longitude": 116.8275,
-      "street": "Jalan Yos Sudarso",
-      "level": "Rendah",
-      "depth": "20cm",
-      "radius": 30
+      "street": "Jl. MT Haryono (Depan Trakindo)",
+      "latitude": -1.2350, "longitude": 116.8620,
+      "radius": 120, "depth": "50 cm",
+      "description": "Genangan tinggi arus deras."
     },
     {
-      "id": 4,
-      "latitude": -1.275,
-      "longitude": 116.838,
-      "street": "Jalan A Yani",
-      "level": "Tinggi",
-      "depth": "60cm",
-      "radius": 40
+      "street": "Jl. Beller (Jalan Tembus Damai)",
+      "latitude": -1.2450, "longitude": 116.8500,
+      "radius": 200, "depth": "90 cm",
+      "description": "Jalan alternatif yang selalu tenggelam."
     },
     {
-      "id": 5,
-      "latitude": -1.270,
-      "longitude": 116.840,
-      "street": "Jalan S Parman",
-      "level": "Sedang",
-      "depth": "35cm",
-      "radius": 35
+      "street": "Jl. Ahmad Yani (Simpang Puskib)",
+      "latitude": -1.2585, "longitude": 116.8345,
+      "radius": 120, "depth": "40 cm",
+      "description": "Area cekungan Puskib - Gunung Sari."
+    },
+    {
+      "street": "Jl. Ahmad Yani (Depan Karang Jati)",
+      "latitude": -1.2520, "longitude": 116.8320,
+      "radius": 100, "depth": "30 cm",
+      "description": "Genangan drainase meluap."
+    },
+    {
+      "street": "Jl. Jenderal Sudirman (Depan Hotel Gran Senyiur)",
+      "latitude": -1.2725, "longitude": 116.8220,
+      "radius": 110, "depth": "35 cm",
+      "description": "Jalan protokol pantai tergenang."
+    },
+    {
+      "street": "Jl. Jenderal Sudirman (Pasar Klandasan)",
+      "latitude": -1.2700, "longitude": 116.8250,
+      "radius": 80, "depth": "20 cm",
+      "description": "Genangan depan pasar/BRI."
+    },
+    {
+      "street": "Simpang Muara Rapak (Plaza Ramayana)",
+      "latitude": -1.2435, "longitude": 116.8335,
+      "radius": 100, "depth": "30 cm",
+      "description": "Titik rawan macet dan genangan."
+    },
+    {
+      "street": "Jl. Soekarno Hatta KM 0.5 (Depan Polsek)",
+      "latitude": -1.2400, "longitude": 116.8330,
+      "radius": 80, "depth": "25 cm",
+      "description": "Awal tanjakan kilo."
+    },
+    {
+      "street": "Jl. Mayjend Sutoyo (Gunung Malang)",
+      "latitude": -1.2605, "longitude": 116.8390,
+      "radius": 90, "depth": "40 cm",
+      "description": "Banjir kiriman deras dari gunung."
+    },
+    {
+      "street": "Jl. Siaga (Damai)",
+      "latitude": -1.2480, "longitude": 116.8480,
+      "radius": 100, "depth": "60 cm",
+      "description": "Jalan penghubung pemukiman banjir."
+    },
+    {
+      "street": "Jl. Indrakila (Kampung Timur)",
+      "latitude": -1.2300, "longitude": 116.8500,
+      "radius": 100, "depth": "45 cm",
+      "description": "Area cekungan sekolah."
+    },
+    {
+      "street": "Jl. Mulawarman (Jembatan Batakan)",
+      "latitude": -1.2250, "longitude": 116.9150,
+      "radius": 150, "depth": "50 cm",
+      "description": "Akses timur terputus."
+    },
+    {
+      "street": "Jl. Mulawarman (PJHI)",
+      "latitude": -1.2300, "longitude": 116.9000,
+      "radius": 100, "depth": "40 cm",
+      "description": "Depan asrama haji."
+    },
+    {
+      "street": "Jl. Marsma Iswahyudi (Pasar Sepinggan)",
+      "latitude": -1.2650, "longitude": 116.8850,
+      "radius": 90, "depth": "30 cm",
+      "description": "Depan pasar sering tergenang."
+    },
+    {
+      "street": "Jl. Letjen Suprapto (Kebun Sayur)",
+      "latitude": -1.2485, "longitude": 116.8050,
+      "radius": 100, "depth": "35 cm",
+      "description": "Area barat Balikpapan."
+    },
+    {
+      "street": "Jl. Strat 2 (Gunung Samarinda)",
+      "latitude": -1.2380, "longitude": 116.8450,
+      "radius": 80, "depth": "30 cm",
+      "description": "Jalan lingkungan padat."
+    },
+    {
+      "street": "Jl. Ruhui Rahayu (Depan Dome/BSCC)",
+      "latitude": -1.2380, "longitude": 116.8750,
+      "radius": 80, "depth": "25 cm",
+      "description": "Genangan air hujan lokal."
+    },
+    {
+      "street": "Jl. Syarifuddin Yoes (Depan Sepinggan Pratama)",
+      "latitude": -1.2500, "longitude": 116.8800,
+      "radius": 80, "depth": "20 cm",
+      "description": "Genangan kecil tapi mengganggu."
     }
   ]
 }
