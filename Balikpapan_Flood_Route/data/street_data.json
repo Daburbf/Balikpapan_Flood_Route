@@ -17,8 +17,8 @@
     {
       "id": 3,
       "name": "Jalan Yos Sudarso",
-      "latitude": -1.265,
-      "longitude": 116.828,
+      "latitude": -1.263,
+      "longitude": 116.826,
       "connections": [1, 6]
     },
     {
