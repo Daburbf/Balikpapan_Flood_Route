@@ -1,114 +1,130 @@
-import io
-import folium
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
+from PyQt5.QtCore import pyqtSignal
+import folium
+import io
+import json
+
+class CustomWebEnginePage(QWebEnginePage):
+    console_message_signal = pyqtSignal(str)
+
+    def javaScriptConsoleMessage(self, level, message, lineNumber, sourceID):
+        if message.startswith("CLICK:"):
+            self.console_message_signal.emit(message)
 
 class MapWidget(QWidget):
+    map_clicked_signal = pyqtSignal(float, float) 
+
     def __init__(self):
         super().__init__()
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
         
-        self.webview = QWebEngineView()
-        self.layout.addWidget(self.webview)
+        self.view = QWebEngineView()
+        self.page = CustomWebEnginePage()
+        self.page.console_message_signal.connect(self.handle_js_message)
+        self.view.setPage(self.page)
         
-        self.map = None
-        self.default_location = [-1.265, 116.831] 
-        
-        # --- MEMORY PENYIMPANAN ---
-        # Kita simpan data banjir di sini agar tidak hilang saat refresh
-        self.stored_flood_data = [] 
-        
-        self.load_map()
+        self.layout.addWidget(self.view)
+        self.map_obj = None
 
-    def load_map(self):
-        """Reset peta ke kondisi awal"""
-        self.map = folium.Map(
-            location=self.default_location, 
-            zoom_start=13,
-            tiles='CartoDB dark_matter',
-            control_scale=True
-        )
+    def handle_js_message(self, msg):
+        try:
+            coords = msg.split(":")[1]
+            lat_str, lon_str = coords.split(",")
+            lat, lon = float(lat_str), float(lon_str)
+            self.map_clicked_signal.emit(lat, lon)
+        except:
+            pass
+
+    def load_map(self, center=[-1.265, 116.831], zoom=13):
+        self.map_obj = folium.Map(location=center, zoom_start=zoom, tiles="CartoDB dark_matter")
         
-        # Setiap kali load map baru, otomatis gambar ulang banjir (jika ada datanya)
-        if self.stored_flood_data:
-            self._draw_flood_layers()
-            
-        self.refresh_map()
+        # Script untu menangkap klik
+        self.map_obj.get_root().html.add_child(folium.Element("""
+            <script>
+                window.onload = function() {
+                    var maps = [];
+                    for (var key in window) {
+                        if (key.startsWith('map_')) {
+                            var obj = window[key];
+                            if (obj && obj.on) {
+                                obj.on('click', function(e) {
+                                    console.log("CLICK:" + e.latlng.lat + "," + e.latlng.lng);
+                                });
+                                // Expose map object globally for other JS functions
+                                window.my_folium_map = obj;
+                            }
+                        }
+                    }
+                };
+                
+                // Fungsi JS untuk menambah marker sementara tanpa reload
+                function js_add_temp_marker(lat, lng) {
+                    if (window.my_folium_map) {
+                        L.circleMarker([lat, lng], {
+                            radius: 4,
+                            color: 'yellow',
+                            fillColor: 'orange',
+                            fillOpacity: 1
+                        }).addTo(window.my_folium_map);
+                    }
+                }
+            </script>
+        """))
+
+        data = io.BytesIO()
+        self.map_obj.save(data, close_file=False)
+        self.view.setHtml(data.getvalue().decode())
+
+    def add_temp_marker_visual(self, lat, lon):
+        """Memanggil fungsi JS untuk memunculkan titik visual seketika"""
+        js_code = f"js_add_temp_marker({lat}, {lon});"
+        self.view.page().runJavaScript(js_code)
+
+    def draw_route(self, coordinates, color="blue"):
+        if not self.map_obj: return
+        folium.PolyLine(locations=coordinates, color=color, weight=5, opacity=0.8).add_to(self.map_obj)
+        self.refresh_view()
+
+    def add_start_marker(self, location, label):
+        folium.Marker(location, popup=label, icon=folium.Icon(color="green", icon="play")).add_to(self.map_obj)
+        self.refresh_view()
+
+    def add_end_marker(self, location, label):
+        folium.Marker(location, popup=label, icon=folium.Icon(color="red", icon="stop")).add_to(self.map_obj)
+        self.refresh_view()
+    
+    def add_flood_polygon(self, points):
+        """Menggambar area banjir bentuk bebas (Polygon)"""
+        if len(points) < 3: return
+        folium.Polygon(
+            locations=points,
+            color="red",
+            fill=True,
+            fill_color="red",
+            fill_opacity=0.4,
+            popup="AREA BANJIR (User)"
+        ).add_to(self.map_obj)
+        self.refresh_view()
 
     def add_flood_areas(self, flood_data):
-        """Simpan data banjir dan gambar"""
-        self.stored_flood_data = flood_data # Simpan ke memori
-        self._draw_flood_layers()
-        self.refresh_map()
-
-    def _draw_flood_layers(self):
-        """Fungsi internal untuk menggambar lingkaran merah"""
-        if not self.stored_flood_data:
-            return
-
-        for point in self.stored_flood_data:
-            try:
-                lat = point.get('latitude')
-                lon = point.get('longitude')
-                radius = point.get('radius', 50)
-                street = point.get('street', 'Area Banjir')
-                
-                folium.Circle(
-                    location=[lat, lon],
-                    radius=radius,
-                    color='#ef4444',      # Merah terang
-                    fill=True,
-                    fill_color='#ef4444',
-                    fill_opacity=0.4,
-                    popup=f"⛔ BANJIR: {street}"
-                ).add_to(self.map)
-            except Exception:
-                pass
-
-    def add_start_marker(self, coords, name="Start"):
-        folium.Marker(
-            location=coords,
-            popup=f"Start: {name}",
-            icon=folium.Icon(color='green', icon='play')
-        ).add_to(self.map)
-        self.refresh_map()
-
-    def add_end_marker(self, coords, name="Tujuan"):
-        folium.Marker(
-            location=coords,
-            popup=f"Tujuan: {name}",
-            icon=folium.Icon(color='blue', icon='flag')
-        ).add_to(self.map)
-        self.refresh_map()
-
-    def draw_route(self, route_coords, color='#3b82f6'):
-        """Menggambar rute tanpa menghapus banjir"""
-        # Jangan panggil load_map() di sini agar marker start/end & banjir tidak hilang
+        # Untuk data lama (lingkaran)
+        for point in flood_data:
+            if 'radius' in point:
+                lat, lon = point['latitude'], point['longitude']
+                r = point.get('radius', 100)
+                folium.Circle([lat, lon], radius=r, color="red", fill=True, fill_opacity=0.4, popup="BANJIR").add_to(self.map_obj)
+        self.refresh_view()
         
-        if route_coords:
-            folium.PolyLine(
-                route_coords,
-                color=color,
-                weight=5,
-                opacity=0.8,
-                tooltip="Rute Aman"
-            ).add_to(self.map)
-            
-            # Zoom agar rute terlihat jelas
-            self.map.fit_bounds(route_coords)
-            self.refresh_map()
-
     def clear_routes(self):
-        """Hapus rute tapi pertahankan banjir"""
-        # Reload map dasar
-        self.load_map() 
-        # (Fungsi load_map di atas sudah otomatis menggambar ulang banjir)
+        # Logic reset ada di main window (reload map)
+        pass 
 
     def set_status(self, text):
-        print(f"MAP STATUS: {text}")
+        pass
 
-    def refresh_map(self):
+    def refresh_view(self):
         data = io.BytesIO()
-        self.map.save(data, close_file=False)
-        self.webview.setHtml(data.getvalue().decode())
+        self.map_obj.save(data, close_file=False)
+        self.view.setHtml(data.getvalue().decode())

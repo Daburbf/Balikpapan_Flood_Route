@@ -1,0 +1,112 @@
+{
+  "locations": [
+    {
+      "name": "Perum Sosial, Kelurahan Sepinggan",
+      "latitude": null,
+      "longitude": null,
+      "note": "coordinate not found (needs OSM query)"
+    },
+    {
+      "name": "Perum Sosial RT 28, Kelurahan Batu Ampar",
+      "latitude": -1.2671,
+      "longitude": 116.8378,
+      "note": "approximate from public education dataset"
+    },
+    {
+      "name": "Jalan Sepinggan Baru PT HER 1",
+      "latitude": null,
+      "longitude": null,
+      "note": "coordinate not found (needs OSM query)"
+    },
+    {
+      "name": "BDS 2",
+      "latitude": null,
+      "longitude": null,
+      "note": "coordinate not found (ambiguous name)"
+    },
+    {
+      "name": "Permukiman Beller, Kelurahan Damai",
+      "latitude": null,
+      "longitude": null,
+      "note": "coordinate not found (needs OSM query)"
+    },
+    {
+      "name": "Gang Mufakat I, Kelurahan Damai Bahagia",
+      "latitude": null,
+      "longitude": null,
+      "note": "coordinate not found (needs OSM query)"
+    },
+    {
+      "name": "Sumber Rejo, Balikpapan Tengah",
+      "latitude": -1.24889,
+      "longitude": 116.85194,
+      "note": "approximate (Kelurahan center)"
+    },
+    {
+      "name": "Jalan MT Haryono",
+      "latitude": -1.2235,
+      "longitude": 116.89,
+      "note": "approximate central point of the road"
+    },
+    {
+      "name": "Jalan Beller",
+      "latitude": null,
+      "longitude": null,
+      "note": "coordinate not found (needs specific segment)"
+    },
+    {
+      "name": "Simpang Gunung Sari - Gunung Malang",
+      "latitude": null,
+      "longitude": null,
+      "note": "intersection ambiguous; needs OSM query"
+    },
+    {
+      "name": "Jalan Sumber Rejo",
+      "latitude": -1.2466,
+      "longitude": 116.8532,
+      "note": "approximate point on the road"
+    },
+    {
+      "name": "Jalan Batakan",
+      "latitude": null,
+      "longitude": null,
+      "note": "coordinate not found (road spans area)"
+    },
+    {
+      "name": "Jalan BJBJ",
+      "latitude": -1.217,
+      "longitude": 116.849,
+      "note": "approximate point"
+    },
+    {
+      "name": "Jalan Manggar, area Batakan",
+      "latitude": null,
+      "longitude": null,
+      "note": "area-wide; needs specific point or OSM query"
+    },
+    {
+      "name": "Jalan Penggalang, Damai",
+      "latitude": null,
+      "longitude": null,
+      "note": "coordinate not found (needs OSM query)"
+    },
+    {
+      "name": "Depan Stadion Batakan",
+      "latitude": -1.2361,
+      "longitude": 116.8666,
+      "note": "stadium main entrance approx."
+    },
+    {
+      "name": "Jalan Ahmad Yani",
+      "latitude": -1.219,
+      "longitude": 116.887,
+      "note": "approximate point on the road"
+    },
+    {
+      "name": "Sekitar RS Ibnu Sina, Muara Rapak",
+      "latitude": -1.2245,
+      "longitude": 116.9029,
+      "note": "approximate hospital area"
+    }
+  ]
+}
