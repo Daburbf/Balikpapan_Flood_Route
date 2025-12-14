@@ -13,7 +13,7 @@ class Graph:
         self.G = ox.add_edge_travel_times(self.G)
         
         # Urutkan index agar pencarian lebih cepat
-        self.G = ox.utils_graph.get_largest_component(self.G, strongly=True)
+        self.G = ox.truncate.largest_component(self.G, strongly=True)
         print(f"Peta Siap! {len(self.G.nodes)} titik jalan termuat.")
 
     def apply_flood_data(self, flood_data):
