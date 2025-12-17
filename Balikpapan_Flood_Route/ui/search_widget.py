@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QLabel, QFrame, QScrollArea, QRadioButton, QButtonGroup, QDialog, QMessageBox, QGroupBox
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QLabel, QFrame, QScrollArea, QRadioButton, QButtonGroup, QGroupBox
 from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 from PyQt5.QtGui import QFont
 
@@ -36,28 +36,6 @@ class SearchWidget(QWidget):
         
         title_label = QLabel(self.title)
         title_label.setStyleSheet("font-size: 14px; font-weight: 600; color: #ffffff; margin-bottom: 2px;")
-        
-        if not self.is_destination:
-            history_btn = QPushButton("Riwayat")
-            history_btn.setCursor(Qt.PointingHandCursor)
-            history_btn.setStyleSheet("""
-                QPushButton {
-                    background-color: #3b82f6;
-                    color: white;
-                    border: none;
-                    padding: 4px 10px;
-                    border-radius: 6px;
-                    font-size: 11px;
-                    font-weight: 500;
-                    min-width: 60px;
-                }
-                QPushButton:hover {
-                    background-color: #2563eb;
-                }
-            """)
-            history_btn.clicked.connect(self.show_history_dialog)
-            header_layout.addStretch()
-            header_layout.addWidget(history_btn)
         
         header_layout.addWidget(title_label)
         header_layout.addStretch()
@@ -279,14 +257,3 @@ class SearchWidget(QWidget):
         self.results_scroll.setVisible(False)
         if hasattr(self, 'car_radio'):
             self.car_radio.setChecked(True)
-    
-    def show_history_dialog(self):
-        from ui.history_dialog import HistoryDialog
-        dialog = HistoryDialog(self)
-        dialog.location_selected.connect(self.on_history_location_selected)
-        dialog.exec_()
-    
-    def on_history_location_selected(self, location_text):
-        self.search_input.setText(location_text)
-        self.perform_search(location_text)
-        self.results_scroll.setVisible(True)
