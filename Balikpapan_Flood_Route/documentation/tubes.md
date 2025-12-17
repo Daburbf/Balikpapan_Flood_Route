@@ -50,10 +50,11 @@ Oleh karena itu, diperlukan sebuah sistem rekomendasi rute yang bersifat spesifi
 1. **Objective Function**  
    	Sistem navigasi rute banjir ini bertujuan untuk meminimalkan total biaya perjalanan (Total Travel Cost) dari titik awal (Start) ke titik tujuan (End), dengan kendala utama berupa penghindaran area banjir.  
    Rumus pencarian rute  
-    \[
-    Z = \sum _ { i = 1 } ^ { n - 1 } w ( v _ { i } , v _ { i + 1 } )
-    \]
-
+    
+    $$
+    Z = \sum_{i=1}^{n-1} w(v_i, v_{i+1})
+    $$
+    
    Keterangan Simbol :
 * Z : Total Biaya (Total Cost) atau total jarak tempuh rute akhir dalam satuan meter.  
 * n : Jumlah total simpul (nodes) yang dilalui dalam rute tersebut.  
@@ -93,8 +94,6 @@ Oleh karena itu, diperlukan sebuah sistem rekomendasi rute yang bersifat spesifi
   **b) Hazard Knowledge (Data Banjir)** Lapisan pengetahuan kedua adalah "Zona Bahaya" yang bersumber dari data eksternal (locations\_balikpapan.json). Data ini bertindak sebagai Constraint Layer (Lapisan Kendala). Sistem tidak memprediksi banjir, melainkan "mengetahui" lokasi banjir secara deterministik dan mengubah struktur topologi graf dengan menghapus simpul-simpul yang bertentangan dengan data bahaya ini (radius 150m).  
    	Dengan menggabungkan Topological Knowledge dan Hazard Knowledge, sistem membentuk "Safe-Graph" baru. Jadi, ketika algoritma pencari rute dijalankan, ia tidak perlu lagi melakukan pengecekan berulang kali ("apakah ini banjir?"), karena graf yang ia jelajahi sudah dipastikan bersih dari simpul berbahaya sejak awal.  
     
-    
-    
 4. **Tahap Penelitian**  
    Penelitian ini menggunakan Algoritma Dijkstra dengan Flood-Aware Optimization. Metode ini menerapkan pendekatan search algorithm dalam kecerdasan buatan tradisional yang bertujuan untuk menemukan rute optimal dengan mempertimbangkan kendala banjir. Algoritma Dijkstra dimodifikasi untuk menjadi flood-aware, di mana sistem tidak hanya mencari jarak terpendek tetapi juga menghindari area yang terdampak banjir.  
    Prinsip kerja algoritma ini adalah dengan melakukan look-ahead evaluation terhadap semua kemungkinan rute, kemudian memilih path dengan minimum cost berdasarkan fungsi objektif yang mempertimbangkan baik jarak fisik maupun risiko banjir. Setiap aksi (perpindahan dari satu node ke node lain) dihitung nilainya berdasarkan objective function, dan aksi dengan nilai minimum tersebut akan dieksekusi.  
@@ -110,10 +109,6 @@ Oleh karena itu, diperlukan sebuah sistem rekomendasi rute yang bersifat spesifi
 5. Pemilihan Simpul Baru: Pilih simpul dengan jarak terpendek yang belum dikunjungi sebagai simpul aktif berikutnya. Ini adalah simpul dengan jarak terpendek di antara semua simpul yang belum dikunjungi.  
 6. Pengulangan: Ulangi langkah 3 hingga 5 sampai semua simpul telah dikunjungi atau simpul tujuan tercapai.  
 7. Hasil: Setelah semua simpul telah dikunjungi atau simpul tujuan dicapai, hasil yang diperoleh adalah jarak terpendek dari simpul awal ke simpul tujuan.  
-
-   
-
-   
 
 **E. IMPLEMENTASI**
 
@@ -232,7 +227,7 @@ def add\_flood\_polygon(self, points):
         fill\_opacity=0.4  
     ).add\_to(self.map\_obj)  
 def add\_flood\_polygon(self, points):
-  
+
     \# Menggambar area merah (Danger Zone) di peta  
     folium.Polygon(  
         locations=points,  
