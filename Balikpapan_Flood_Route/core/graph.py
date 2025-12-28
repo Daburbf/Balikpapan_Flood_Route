@@ -18,7 +18,7 @@ class Graph:
         Menghapus node (titik jalan) yang berada dalam radius banjir.
         Mendukung format data baru (latitude/longitude) dan lama (lat/lon).
         """
-        print(f"⚡ Memproses pemblokiran jalan untuk {len(flood_points)} titik banjir...")
+        print(f"Memproses pemblokiran jalan untuk {len(flood_points)} titik banjir...")
         
         nodes_to_remove = []
         removed_count = 0
@@ -56,4 +56,4 @@ class Graph:
                 self.G.remove_node(node)
                 removed_count += 1
                 
-        print(f"🚫 Berhasil memblokir {removed_count} titik jalan yang terendam banjir.")
+        print(f"Berhasil memblokir {removed_count} titik jalan yang terendam banjir.")
