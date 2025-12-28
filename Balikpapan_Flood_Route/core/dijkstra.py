@@ -29,7 +29,7 @@ class Dijkstra:
                 continue
 
             for neighbor, edge_data in self.graph[current_node].items():
-                # edge_data adalah dictionary, ambil item pertama (key 0 untuk multigraph)
+
                 attributes = edge_data.get(0, {}) 
                 weight = attributes.get('length', 1)
                 
